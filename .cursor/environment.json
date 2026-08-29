@@ -1,0 +1,3 @@
+{
+  "install": "sudo apt-get update && sudo apt-get install -y python3-venv python3.12-venv\ncd /workspace/customer-support-agent && npm install\ncd /workspace/financial-data-analyst && npm install\ncd /workspace/computer-use-demo && rm -rf .venv && python3 -m venv .venv && source .venv/bin/activate && pip install --upgrade pip && pip install -r dev-requirements.txt httpx"
+}
