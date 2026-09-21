@@ -9,6 +9,7 @@ We still route them through resize_and_encode for uniform JPEG encoding.
 import io
 import time
 from typing import Any, ClassVar, Literal
+from urllib.parse import urlparse
 
 from PIL import Image
 from playwright.sync_api import Browser, Page, Playwright, sync_playwright
@@ -98,7 +99,11 @@ class BrowserTool(Tool):
         "type": "object",
         "properties": {
             "action": {"type": "string", "enum": _ACTIONS},
-            "url": {"type": "string", "description": "for navigate"},
+            "url": {
+                "type": "string",
+                "pattern": "^https?://",
+                "description": "for navigate (http/https only)",
+            },
             "coordinate": {"type": "array", "items": {"type": "integer"}},
             "text": {
                 "type": "string",
@@ -149,6 +154,10 @@ class BrowserTool(Tool):
 
     def execute(self, **kwargs: Any) -> ToolResult:
         action = kwargs["action"]
+        # Checked before the browser is launched so a file:// (or other
+        # non-web scheme) request never bypasses the sandbox deny-list.
+        if action == "navigate" and urlparse(kwargs["url"]).scheme not in ("http", "https"):
+            return ToolResult(error="navigate only supports http:// and https:// URLs")
         try:
             page = self._ensure_page()
         except Exception as e:

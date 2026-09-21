@@ -77,6 +77,8 @@ This demo uses a defense-in-depth security approach (see `security.py` and `clie
 
 Commands not in the allowlist are blocked by the security hook.
 
+The browser tools come from the third-party npm package `puppeteer-mcp-server` (pinned to 0.7.2 in `client.py`); bump the pin deliberately after reviewing the release.
+
 ## Project Structure
 
 ```

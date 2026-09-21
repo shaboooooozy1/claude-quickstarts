@@ -8,6 +8,22 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+// Mirrors the model dropdown in components/ChatArea.tsx
+const ALLOWED_MODELS = new Set([
+  "claude-3-haiku-20240307",
+  "claude-haiku-4-5-20251001",
+  "claude-3-5-sonnet-20240620",
+]);
+
+// Knowledge base IDs are resolved server-side from KNOWLEDGE_BASE_ID
+// (comma-separated) so the caller cannot point RAG at arbitrary Bedrock KBs.
+const ALLOWED_KNOWLEDGE_BASE_IDS = new Set(
+  (process.env.KNOWLEDGE_BASE_ID ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
+
 // Debug message helper function
 // Input: message string and optional data object
 // Output: JSON string with message, sanitized data, and timestamp
@@ -65,9 +81,30 @@ export async function POST(req: Request) {
   const apiStart = performance.now();
   const measureTime = (label: string) => logTimestamp(label, apiStart);
 
-  // Extract data from the request body
-  const { messages, model, knowledgeBaseId } = await req.json();
-  const latestMessage = messages[messages.length - 1].content;
+  // Extract and validate data from the request body
+  const body = await req.json();
+  const { messages, model, knowledgeBaseId } = body ?? {};
+  if (
+    !Array.isArray(messages) ||
+    messages.length === 0 ||
+    typeof messages[messages.length - 1]?.content !== "string"
+  ) {
+    return new Response(
+      JSON.stringify({ error: "messages must be a non-empty array" }),
+      { status: 400 },
+    );
+  }
+  if (typeof model !== "string" || !ALLOWED_MODELS.has(model)) {
+    return new Response(JSON.stringify({ error: "Unsupported model" }), {
+      status: 400,
+    });
+  }
+  const safeKnowledgeBaseId =
+    typeof knowledgeBaseId === "string" &&
+    ALLOWED_KNOWLEDGE_BASE_IDS.has(knowledgeBaseId)
+      ? knowledgeBaseId
+      : undefined;
+  const latestMessage: string = messages[messages.length - 1].content;
 
   console.log("📝 Latest Query:", latestMessage);
   measureTime("User Input Received");
@@ -78,7 +115,7 @@ export async function POST(req: Request) {
     debugMessage("🚀 API route called", {
       messagesReceived: messages.length,
       latestMessageLength: latestMessage.length,
-      anthropicKeySlice: process.env.ANTHROPIC_API_KEY?.slice(0, 4) + "****",
+      hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
     }),
   ).slice(0, MAX_DEBUG_LENGTH);
 
@@ -91,7 +128,7 @@ export async function POST(req: Request) {
   try {
     console.log("🔍 Initiating RAG retrieval for query:", latestMessage);
     measureTime("RAG Start");
-    const result = await retrieveContext(latestMessage, knowledgeBaseId);
+    const result = await retrieveContext(latestMessage, safeKnowledgeBaseId);
     retrievedContext = result.context;
     isRagWorking = result.isRagWorking;
     ragSources = result.ragSources || [];

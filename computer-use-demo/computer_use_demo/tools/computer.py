@@ -164,7 +164,10 @@ class BaseComputerTool:
                 raise ToolError(output=f"{text} must be a string")
 
             if action == "key":
-                command_parts = [self.xdotool, f"key -- {text}"]
+                command_parts = [
+                    self.xdotool,
+                    "key -- " + " ".join(shlex.quote(k) for k in text.split()),
+                ]
                 return await self.shell(" ".join(command_parts))
             elif action == "type":
                 results: list[ToolResult] = []
@@ -350,10 +353,14 @@ class ComputerTool20250124(BaseComputerTool, BaseAnthropicTool):
 
             command_parts = [self.xdotool, mouse_move_part]
             if text:
-                command_parts.append(f"keydown {text}")
+                command_parts.append(
+                    "keydown " + " ".join(shlex.quote(k) for k in text.split())
+                )
             command_parts.append(f"click --repeat {scroll_amount} {scroll_button}")
             if text:
-                command_parts.append(f"keyup {text}")
+                command_parts.append(
+                    "keyup " + " ".join(shlex.quote(k) for k in text.split())
+                )
 
             return await self.shell(" ".join(command_parts))
 
@@ -397,10 +404,14 @@ class ComputerTool20250124(BaseComputerTool, BaseAnthropicTool):
 
             command_parts = [self.xdotool, mouse_move_part]
             if key:
-                command_parts.append(f"keydown {key}")
+                command_parts.append(
+                    "keydown " + " ".join(shlex.quote(k) for k in key.split())
+                )
             command_parts.append(f"click {CLICK_BUTTONS[action]}")
             if key:
-                command_parts.append(f"keyup {key}")
+                command_parts.append(
+                    "keyup " + " ".join(shlex.quote(k) for k in key.split())
+                )
 
             return await self.shell(" ".join(command_parts))
 

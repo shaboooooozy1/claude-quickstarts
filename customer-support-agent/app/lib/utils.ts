@@ -6,9 +6,6 @@ import {
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-console.log("🔑 Have AWS AccessKey?", !!process.env.BAWS_ACCESS_KEY_ID);
-console.log("🔑 Have AWS Secret?", !!process.env.BAWS_SECRET_ACCESS_KEY);
-
 const bedrockClient = new BedrockAgentRuntimeClient({
   region: "us-east-1", // Make sure this matches your Bedrock region
   credentials: {
@@ -30,7 +27,7 @@ export interface RAGSource {
 
 export async function retrieveContext(
   query: string,
-  knowledgeBaseId: string,
+  knowledgeBaseId: string | undefined,
   n: number = 3,
 ): Promise<{
   context: string;

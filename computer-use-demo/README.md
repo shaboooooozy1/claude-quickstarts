@@ -10,6 +10,7 @@
 > 2. Avoid giving the model access to sensitive data, such as account login information, to prevent information theft.
 > 3. Limit internet access to an allowlist of domains to reduce exposure to malicious content.
 > 4. Ask a human to confirm decisions that may result in meaningful real-world consequences as well as any tasks requiring affirmative consent, such as accepting cookies, executing financial transactions, or agreeing to terms of service.
+> 5. The demo has no authentication: the Streamlit agent UI, noVNC and the VNC server (x11vnc runs with `-nopw`) accept any connection that reaches the published ports, and the container grants passwordless sudo. Publish the ports on 127.0.0.1 only (as shown below) and never expose them to a shared or untrusted network without an authenticating reverse proxy or SSH tunnel.
 >
 > In some circumstances, Claude will follow commands found in content even if it conflicts with the user's instructions. For example, instructions on webpages or contained in images may override user instructions or cause Claude to make mistakes. We suggest taking precautions to isolate Claude from sensitive data and actions to avoid risks related to prompt injection.
 >
@@ -45,10 +46,10 @@ export ANTHROPIC_API_KEY=%your_api_key%
 docker run \
     -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
     -v $HOME/.anthropic:/home/computeruse/.anthropic \
-    -p 5900:5900 \
-    -p 8501:8501 \
-    -p 6080:6080 \
-    -p 8080:8080 \
+    -p 127.0.0.1:5900:5900 \
+    -p 127.0.0.1:8501:8501 \
+    -p 127.0.0.1:6080:6080 \
+    -p 127.0.0.1:8080:8080 \
     -it ghcr.io/anthropics/anthropic-quickstarts:computer-use-demo-latest
 ```
 
@@ -72,10 +73,10 @@ docker run \
     -e AWS_REGION=us-west-2 \
     -v $HOME/.aws:/home/computeruse/.aws \
     -v $HOME/.anthropic:/home/computeruse/.anthropic \
-    -p 5900:5900 \
-    -p 8501:8501 \
-    -p 6080:6080 \
-    -p 8080:8080 \
+    -p 127.0.0.1:5900:5900 \
+    -p 127.0.0.1:8501:8501 \
+    -p 127.0.0.1:6080:6080 \
+    -p 127.0.0.1:8080:8080 \
     -it ghcr.io/anthropics/anthropic-quickstarts:computer-use-demo-latest
 ```
 
@@ -94,10 +95,10 @@ docker run \
     -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
     -e AWS_REGION=us-west-2 \
     -v $HOME/.anthropic:/home/computeruse/.anthropic \
-    -p 5900:5900 \
-    -p 8501:8501 \
-    -p 6080:6080 \
-    -p 8080:8080 \
+    -p 127.0.0.1:5900:5900 \
+    -p 127.0.0.1:8501:8501 \
+    -p 127.0.0.1:6080:6080 \
+    -p 127.0.0.1:8080:8080 \
     -it ghcr.io/anthropics/anthropic-quickstarts:computer-use-demo-latest
 ```
 
@@ -117,10 +118,10 @@ docker run \
     -e CLOUD_ML_REGION=$VERTEX_REGION \
     -e ANTHROPIC_VERTEX_PROJECT_ID=$VERTEX_PROJECT_ID \
     -v $HOME/.config/gcloud/application_default_credentials.json:/home/computeruse/.config/gcloud/application_default_credentials.json \
-    -p 5900:5900 \
-    -p 8501:8501 \
-    -p 6080:6080 \
-    -p 8080:8080 \
+    -p 127.0.0.1:5900:5900 \
+    -p 127.0.0.1:8501:8501 \
+    -p 127.0.0.1:6080:6080 \
+    -p 127.0.0.1:8080:8080 \
     -it computer-use-demo
 ```
 
@@ -149,10 +150,10 @@ Environment variables `WIDTH` and `HEIGHT` can be used to set the screen size. F
 docker run \
     -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
     -v $HOME/.anthropic:/home/computeruse/.anthropic \
-    -p 5900:5900 \
-    -p 8501:8501 \
-    -p 6080:6080 \
-    -p 8080:8080 \
+    -p 127.0.0.1:5900:5900 \
+    -p 127.0.0.1:8501:8501 \
+    -p 127.0.0.1:6080:6080 \
+    -p 127.0.0.1:8080:8080 \
     -e WIDTH=1920 \
     -e HEIGHT=1080 \
     -it ghcr.io/anthropics/anthropic-quickstarts:computer-use-demo-latest
@@ -176,10 +177,10 @@ docker run \
     -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
     -v $(pwd)/computer_use_demo:/home/computeruse/computer_use_demo/ `# mount local python module for development` \
     -v $HOME/.anthropic:/home/computeruse/.anthropic \
-    -p 5900:5900 \
-    -p 8501:8501 \
-    -p 6080:6080 \
-    -p 8080:8080 \
+    -p 127.0.0.1:5900:5900 \
+    -p 127.0.0.1:8501:8501 \
+    -p 127.0.0.1:6080:6080 \
+    -p 127.0.0.1:8080:8080 \
     -it computer-use-demo:local  # can also use ghcr.io/anthropics/anthropic-quickstarts:computer-use-demo-latest
 ```
 
