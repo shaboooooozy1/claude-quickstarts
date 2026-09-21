@@ -26,6 +26,7 @@ from typing import Annotated, Any, get_args
 import anthropic
 from anthropic.types import ToolParam
 from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
@@ -35,6 +36,7 @@ from computer_use.image import resize_and_encode
 from computer_use.loop import _effort_kwargs
 
 app = FastAPI()
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost"])
 _static = Path(__file__).parent / "static"
 _assets = Path(__file__).parent.parent / "assets"
 app.mount("/assets", StaticFiles(directory=_assets), name="assets")

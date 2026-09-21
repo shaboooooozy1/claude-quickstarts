@@ -47,6 +47,13 @@ def test_sandbox_denies_secret_read(tmp_path):
 
 
 @darwin_only
+def test_sandbox_scrubs_secret_env(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+    res = BashTool().execute(command="env")
+    assert res.output is not None and "sk-ant-test" not in res.output
+
+
+@darwin_only
 def test_output_truncated():
     from constants import cfg
 

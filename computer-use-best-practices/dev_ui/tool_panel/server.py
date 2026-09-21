@@ -15,6 +15,7 @@ from typing import Any
 
 from anthropic.types import ToolParam
 from fastapi import FastAPI
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -23,6 +24,7 @@ from computer_use.__main__ import build_tools
 from computer_use.preflight import accessibility_granted, screen_recording_granted
 
 app = FastAPI()
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost"])
 _tools = build_tools()
 _static = Path(__file__).parent / "static"
 _assets = Path(__file__).parent.parent / "assets"
