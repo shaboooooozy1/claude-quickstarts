@@ -8,7 +8,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any, Literal, cast
 
-import httpx
+import httpx2
 from anthropic import (
     Anthropic,
     AnthropicBedrock,
@@ -87,7 +87,7 @@ async def sampling_loop(
     output_callback: Callable[[BetaContentBlockParam], None],
     tool_output_callback: Callable[[ToolResult, str], None],
     api_response_callback: Callable[
-        [httpx.Request, httpx.Response | object | None, Exception | None], None
+        [httpx2.Request, httpx2.Response | object | None, Exception | None], None
     ],
     api_key: str,
     only_n_most_recent_images: int | None = None,

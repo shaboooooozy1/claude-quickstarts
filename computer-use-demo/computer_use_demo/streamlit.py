@@ -15,7 +15,7 @@ from functools import partial
 from pathlib import PosixPath
 from typing import cast, get_args
 
-import httpx
+import httpx2
 import streamlit as st
 from anthropic import RateLimitError
 from anthropic.types.beta import (
@@ -35,8 +35,8 @@ from computer_use_demo.tools import ToolResult, ToolVersion
 
 PROVIDER_TO_DEFAULT_MODEL_NAME: dict[APIProvider, str] = {
     APIProvider.ANTHROPIC: "claude-opus-4-8",
-    APIProvider.BEDROCK: "anthropic.claude-3-5-sonnet-20241022-v2:0",
-    APIProvider.VERTEX: "claude-3-5-sonnet-v2@20241022",
+    APIProvider.BEDROCK: "anthropic.claude-sonnet-4-5-20250929-v1:0",
+    APIProvider.VERTEX: "claude-sonnet-4-5@20250929",
 }
 
 
@@ -491,8 +491,16 @@ def validate_auth(provider: APIProvider, api_key: str | None):
     if provider == APIProvider.BEDROCK:
         import boto3
 
-        if not boto3.Session().get_credentials():
+        session = boto3.Session()
+        if not session.get_credentials():
             return "You must have AWS credentials set up to use the Bedrock API."
+        # anthropic>=1 no longer defaults the Bedrock region to us-east-1;
+        # AnthropicBedrock() raises unless a region is resolvable.
+        if not session.region_name:
+            return (
+                "Set the AWS_REGION environment variable or configure a region "
+                "for your AWS profile to use the Bedrock API."
+            )
     if provider == APIProvider.VERTEX:
         import google.auth
         from google.auth.exceptions import DefaultCredentialsError
@@ -533,11 +541,11 @@ def save_to_storage(filename: str, data: str) -> None:
 
 
 def _api_response_callback(
-    request: httpx.Request,
-    response: httpx.Response | object | None,
+    request: httpx2.Request,
+    response: httpx2.Response | object | None,
     error: Exception | None,
     tab: DeltaGenerator,
-    response_state: dict[str, tuple[httpx.Request, httpx.Response | object | None]],
+    response_state: dict[str, tuple[httpx2.Request, httpx2.Response | object | None]],
 ):
     """
     Handle an API response by storing it to state and rendering it.
@@ -558,8 +566,8 @@ def _tool_output_callback(
 
 
 def _render_api_response(
-    request: httpx.Request,
-    response: httpx.Response | object | None,
+    request: httpx2.Request,
+    response: httpx2.Response | object | None,
     response_id: str,
     tab: DeltaGenerator,
 ):
@@ -572,7 +580,7 @@ def _render_api_response(
             )
             st.json(request.read().decode())
             st.markdown("---")
-            if isinstance(response, httpx.Response):
+            if isinstance(response, httpx2.Response):
                 st.markdown(
                     f"`{response.status_code}`{newline}{newline.join(f'`{k}: {v}`' for k, v in response.headers.items())}"
                 )

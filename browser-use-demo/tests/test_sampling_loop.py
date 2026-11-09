@@ -342,7 +342,7 @@ class TestSamplingLoopIntegration:
                 tool_outputs[tool_id] = result
 
             updated_messages = await sampling_loop(
-                model="claude-sonnet-4-5",
+                model="claude-sonnet-4-6",
                 provider=APIProvider.ANTHROPIC,
                 system_prompt_suffix="",
                 messages=messages,
@@ -400,7 +400,7 @@ class TestSamplingLoopIntegration:
             messages = [{"role": "user", "content": "Hello"}]
 
             updated_messages = await sampling_loop(
-                model="claude-sonnet-4-5",
+                model="claude-sonnet-4-6",
                 provider=APIProvider.ANTHROPIC,
                 system_prompt_suffix="",
                 messages=messages,
@@ -453,7 +453,7 @@ class TestSamplingLoopIntegration:
             messages = [{"role": "user", "content": "Do multiple things"}]
 
             updated_messages = await sampling_loop(
-                model="claude-sonnet-4-5",
+                model="claude-sonnet-4-6",
                 provider=APIProvider.ANTHROPIC,
                 system_prompt_suffix="",
                 messages=messages,
@@ -495,7 +495,7 @@ class TestSamplingLoopIntegration:
             mock_client.beta.messages.create = Mock(return_value=mock_response)
 
             await sampling_loop(
-                model="claude-sonnet-4-5",
+                model="claude-sonnet-4-6",
                 provider=APIProvider.ANTHROPIC,
                 system_prompt_suffix="",
                 messages=[{"role": "user", "content": "Test"}],
