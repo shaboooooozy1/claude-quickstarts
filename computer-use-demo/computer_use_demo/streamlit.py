@@ -491,8 +491,16 @@ def validate_auth(provider: APIProvider, api_key: str | None):
     if provider == APIProvider.BEDROCK:
         import boto3
 
-        if not boto3.Session().get_credentials():
+        session = boto3.Session()
+        if not session.get_credentials():
             return "You must have AWS credentials set up to use the Bedrock API."
+        # anthropic>=1 no longer defaults the Bedrock region to us-east-1;
+        # AnthropicBedrock() raises unless a region is resolvable.
+        if not session.region_name:
+            return (
+                "Set the AWS_REGION environment variable or configure a region "
+                "for your AWS profile to use the Bedrock API."
+            )
     if provider == APIProvider.VERTEX:
         import google.auth
         from google.auth.exceptions import DefaultCredentialsError
