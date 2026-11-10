@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
-import rehypeRaw from "rehype-raw";
 import {
   HandHelping,
   WandSparkles,
@@ -180,7 +179,7 @@ const MessageContent = ({
 
   return (
     <>
-      <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeHighlight]}>
+      <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
         {parsed.response || content}
       </ReactMarkdown>
       {parsed.redirect_to_agent && (

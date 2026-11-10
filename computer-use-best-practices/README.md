@@ -216,6 +216,10 @@ python -m uvicorn dev_ui.tool_panel.server:app --reload
 # open http://127.0.0.1:8000
 ```
 
+The panel executes tools with no model in the loop and has no authentication;
+it only accepts loopback `Host` headers and must never be started with
+`--host 0.0.0.0`.
+
 A single page for exercising tools by hand without the model in the loop.
 Each tool gets a form auto-generated from its `input_schema`; fill in the
 fields, set a countdown delay (so you have time to switch focus to the target

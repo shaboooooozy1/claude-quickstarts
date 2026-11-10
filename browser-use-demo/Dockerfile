@@ -74,7 +74,8 @@ USER browseruse
 WORKDIR $HOME
 
 # Setup Python
-RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \
+RUN git clone --branch v2.8.6 --depth 1 https://github.com/pyenv/pyenv.git ~/.pyenv && \
+    [ "$(git -C ~/.pyenv rev-parse HEAD)" = "3787bacc9188d76ba7ca24c23e26afb1a841a543" ] && \
     cd ~/.pyenv && src/configure && make -C src && cd .. && \
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc && \
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc && \

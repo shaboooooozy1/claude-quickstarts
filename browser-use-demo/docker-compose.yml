@@ -9,10 +9,10 @@ services:
       - ./validate_env.py:/home/browseruse/validate_env.py
       - ${HOME}/.anthropic:/home/browseruse/.anthropic
     ports:
-      - "${VNC_PORT:-5900}:5900"  # VNC
-      - "${STREAMLIT_PORT:-8501}:8501"  # Streamlit
-      - "${NOVNC_PORT:-6080}:6080"  # noVNC
-      - "${HTTP_PORT:-8080}:8080"  # HTTP server
+      - "${BIND_ADDR:-127.0.0.1}:${VNC_PORT:-5900}:5900"  # VNC
+      - "${BIND_ADDR:-127.0.0.1}:${STREAMLIT_PORT:-8501}:8501"  # Streamlit
+      - "${BIND_ADDR:-127.0.0.1}:${NOVNC_PORT:-6080}:6080"  # noVNC
+      - "${BIND_ADDR:-127.0.0.1}:${HTTP_PORT:-8080}:8080"  # HTTP server
     stdin_open: true
     tty: true
     env_file:

@@ -108,7 +108,10 @@ def create_client(project_dir: Path, model: str) -> ClaudeSDKClient:
                 *PUPPETEER_TOOLS,
             ],
             mcp_servers={
-                "puppeteer": {"command": "npx", "args": ["puppeteer-mcp-server"]}
+                "puppeteer": {
+                    "command": "npx",
+                    "args": ["-y", "puppeteer-mcp-server@0.7.2"],
+                }
             },
             hooks={
                 "PreToolUse": [

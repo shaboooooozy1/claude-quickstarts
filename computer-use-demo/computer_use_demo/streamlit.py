@@ -151,6 +151,24 @@ def _lookup_model_conf(model: str) -> ModelConfig:
 
 CONFIG_DIR = PosixPath("~/.anthropic").expanduser()
 API_KEY_FILE = CONFIG_DIR / "api_key"
+
+_REDACTED_HEADERS = frozenset(
+    {
+        "x-api-key",
+        "authorization",
+        "proxy-authorization",
+        "cookie",
+        "set-cookie",
+        "x-amz-security-token",
+    }
+)
+
+
+def _redact_header(key: str, value: str) -> str:
+    """Hide credential-bearing header values before rendering them in the UI."""
+    return "***REDACTED***" if key.lower() in _REDACTED_HEADERS else value
+
+
 STREAMLIT_STYLE = """
 <style>
     /* Highlight the stop button in red */
@@ -568,13 +586,13 @@ def _render_api_response(
         with st.expander(f"Request/Response ({response_id})"):
             newline = "\n\n"
             st.markdown(
-                f"`{request.method} {request.url}`{newline}{newline.join(f'`{k}: {v}`' for k, v in request.headers.items())}"
+                f"`{request.method} {request.url}`{newline}{newline.join(f'`{k}: {_redact_header(k, v)}`' for k, v in request.headers.items())}"
             )
             st.json(request.read().decode())
             st.markdown("---")
             if isinstance(response, httpx.Response):
                 st.markdown(
-                    f"`{response.status_code}`{newline}{newline.join(f'`{k}: {v}`' for k, v in response.headers.items())}"
+                    f"`{response.status_code}`{newline}{newline.join(f'`{k}: {_redact_header(k, v)}`' for k, v in response.headers.items())}"
                 )
                 st.json(response.text)
             else:

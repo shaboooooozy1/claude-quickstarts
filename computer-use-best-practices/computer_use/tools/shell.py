@@ -5,7 +5,8 @@ Both tools wrap the user's script in `sandbox-exec` with the profile at
 constants.SANDBOX_PROFILE. The default profile allows reading the filesystem
 *except* secret paths (~/.ssh, ~/.aws, ~/.gnupg, .env, …), allows writing only
 to a per-call scratch directory (passed via -D SCRATCH=…), and denies all
-network. Edit the .sb file to loosen.
+network. The child also receives a scrubbed environment so API keys loaded
+from .env do not reach model-authored scripts. Edit the .sb file to loosen.
 """
 
 import os
@@ -24,6 +25,19 @@ from .result import ToolResult
 
 _TIMEOUT_S = 30
 
+_SECRET_ENV_PREFIXES = ("ANTHROPIC_", "AWS_", "GOOGLE_", "GCP_", "CU_")
+_SECRET_ENV_SUFFIXES = ("_KEY", "_TOKEN", "_SECRET", "_PASSWORD", "_CREDENTIALS")
+
+
+def _scrubbed_env() -> dict[str, str]:
+    """Drop credentials from the sandboxed child's environment; the .sb profile
+    denies reading ~/.aws and .env, so inheriting os.environ would undo that."""
+    return {
+        k: v
+        for k, v in os.environ.items()
+        if not k.startswith(_SECRET_ENV_PREFIXES) and not k.endswith(_SECRET_ENV_SUFFIXES)
+    }
+
 
 def _run_sandboxed(argv: list[str], scratch: Path) -> ToolResult:
     """Run argv under sandbox-exec, capping both wall-clock time and captured
@@ -38,7 +52,9 @@ def _run_sandboxed(argv: list[str], scratch: Path) -> ToolResult:
         f"HOME={Path.home()}",
         *argv,
     ]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=scratch)
+    proc = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=scratch, env=_scrubbed_env()
+    )
     assert proc.stdout is not None
     buf = bytearray()
     deadline = time.monotonic() + _TIMEOUT_S

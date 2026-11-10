@@ -5,7 +5,7 @@
 ;; demo are write- and network-denial; trying to enumerate every readable
 ;; system path makes the profile brittle without adding much, so we allow
 ;; file-read* broadly and then deny the secret paths below (later rules take
-;; precedence in SBPL).
+;; precedence in SBPL). The list is illustrative - add your own credential paths.
 (version 1)
 (deny default)
 (import "/System/Library/Sandbox/Profiles/bsd.sb")
@@ -32,6 +32,13 @@
   (subpath (string-append (param "HOME") "/.docker"))
   (subpath (string-append (param "HOME") "/.config/gh"))
   (literal (string-append (param "HOME") "/.netrc"))
+  (subpath (string-append (param "HOME") "/.anthropic"))
+  (subpath (string-append (param "HOME") "/.claude"))
+  (subpath (string-append (param "HOME") "/.config/anthropic"))
+  (subpath (string-append (param "HOME") "/Library/Keychains"))
+  (literal (string-append (param "HOME") "/.git-credentials"))
+  (literal (string-append (param "HOME") "/.npmrc"))
+  (literal (string-append (param "HOME") "/.pypirc"))
   (regex #"/\.env$")
   (regex #"/\.env\.")
 )

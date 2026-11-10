@@ -3,10 +3,12 @@ Security Hooks for Autonomous Coding Agent
 ==========================================
 
 Pre-tool-use hooks that validate bash commands for security.
-Uses an allowlist approach - only explicitly permitted commands can run.
+Uses an allowlist approach - only explicitly permitted commands can run. This
+is a guardrail on top of the SDK sandbox, not a code-execution boundary.
 """
 
 import os
+import re
 import shlex
 
 
@@ -314,6 +316,15 @@ async def bash_security_hook(input_data, tool_use_id=None, context=None):
     command = input_data.get("tool_input", {}).get("command", "")
     if not command:
         return {}
+
+    # Reject constructs the token-level allowlist cannot see: command
+    # substitution, redirection, background/newline chaining.
+    neutral = re.sub(r"&&|\|\||\|", " ", command)
+    if re.search(r"[`$<>&\n]", neutral):
+        return {
+            "decision": "block",
+            "reason": "Command substitution, redirection and background execution are not allowed",
+        }
 
     # Extract all commands from the command string
     commands = extract_commands(command)

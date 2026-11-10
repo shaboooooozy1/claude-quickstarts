@@ -28,6 +28,7 @@ Create a `.env.local` file in the root directory with the following variables:
 ANTHROPIC_API_KEY=your_anthropic_api_key
 BAWS_ACCESS_KEY_ID=your_aws_access_key
 BAWS_SECRET_ACCESS_KEY=your_aws_secret_key
+KNOWLEDGE_BASE_ID=your-knowledge-base-id   # comma-separate multiple IDs; must match the IDs in components/ChatArea.tsx
 ```
 
 Note: We are adding a 'B' in front of the AWS environment variables for a reason that will be discussed later in the deployment section.
@@ -197,6 +198,7 @@ To deploy this application using AWS Amplify, follow these steps:
    ANTHROPIC_API_KEY=your_anthropic_api_key
    BAWS_ACCESS_KEY_ID=your_aws_access_key
    BAWS_SECRET_ACCESS_KEY=your_aws_secret_key
+   KNOWLEDGE_BASE_ID=your-knowledge-base-id
    ```
    The reason we are adding a 'B' in front of the keys here is because AWS doesn't allow keys in Amplify to start with "AWS".
 

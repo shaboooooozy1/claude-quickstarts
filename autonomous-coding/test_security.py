@@ -198,6 +198,12 @@ def main():
         "$(echo pkill) node",
         'eval "pkill node"',
         'bash -c "pkill node"',
+        # Command substitution, redirection, background execution
+        "ls `id`",
+        "ls $(id)",
+        "cat a > /tmp/x",
+        "npm run build 2>&1",
+        "sleep 1 & ls",
         # chmod with disallowed modes
         "chmod 777 file.sh",
         "chmod 755 file.sh",

@@ -3,3 +3,7 @@ generations/
 
 # Log files
 logs/
+
+# Local secrets
+.env
+.env.*
