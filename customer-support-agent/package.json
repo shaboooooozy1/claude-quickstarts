@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=20.9.0"
   },
   "scripts": {
     "dev": "NEXT_PUBLIC_INCLUDE_LEFT_SIDEBAR=true NEXT_PUBLIC_INCLUDE_RIGHT_SIDEBAR=true next dev",
     "build": "NEXT_PUBLIC_INCLUDE_LEFT_SIDEBAR=true NEXT_PUBLIC_INCLUDE_RIGHT_SIDEBAR=true next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "dev:full": "npm run dev",
     "dev:left": "NEXT_PUBLIC_INCLUDE_LEFT_SIDEBAR=true NEXT_PUBLIC_INCLUDE_RIGHT_SIDEBAR=false next dev",
     "dev:right": "NEXT_PUBLIC_INCLUDE_LEFT_SIDEBAR=false NEXT_PUBLIC_INCLUDE_RIGHT_SIDEBAR=true next dev",
@@ -45,7 +45,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8",
+    "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
